@@ -21,4 +21,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     newUser: "/onboarding",
   },
+  trustHost: true,
 });
