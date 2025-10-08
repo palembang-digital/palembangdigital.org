@@ -46,9 +46,8 @@ export function MenuContent({ session }: MenuContentProps) {
                 <div className="relative size-6">
                   <img
                     src={session.user?.image || ""}
-                    className="w-full h-full object-cover"
-                    alt={session.user?.name || "Profile Picture"}
                     className="rounded-full size-full object-cover"
+                    alt={session.user?.name || "Profile Picture"}
                   />
                 </div>
               }
