@@ -1,0 +1,444 @@
+enum article_status {
+  draft
+  published
+  reviewed
+  deleted
+}
+
+enum certificate_status {
+  pending
+  approved
+  rejected
+}
+
+enum event_location_type {
+  offline
+  online
+  hybrid
+}
+
+enum event_status {
+  draft
+  review
+  published
+  private
+  cancelled
+  completed
+}
+
+enum job_opening_status {
+  draft
+  published
+  closed
+}
+
+enum job_type {
+  "full-time"
+  "part-time"
+  contract
+  temporary
+  other
+  volunteer
+  internship
+}
+
+enum rsvp_type {
+  yes
+  maybe
+  no
+}
+
+enum user_role {
+  administrator
+  member
+}
+
+enum video_type {
+  upload
+  youtube
+}
+
+enum workplace_type {
+  "on-site"
+  hybrid
+  remote
+}
+
+table accounts {
+  userId text [not null]
+  type text [not null]
+  provider text [not null]
+  providerAccountId text [not null]
+  refresh_token text
+  access_token text
+  expires_at integer
+  token_type text
+  scope text
+  id_token text
+  session_state text
+
+  indexes {
+    (provider, providerAccountId) [pk]
+  }
+}
+
+table articles {
+  id serial [pk, not null, increment]
+  title text [not null]
+  slug text [not null, unique]
+  cover_image text
+  category text
+  content text [not null]
+  status article_status [not null, default: 'draft']
+  keywords text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+  created_by text [not null]
+  updated_by text [not null]
+}
+
+table articles_authors {
+  article_id integer [not null]
+  user_id text [not null]
+
+  indexes {
+    (article_id, user_id) [pk]
+  }
+}
+
+table authenticators {
+  credentialID text [not null, unique]
+  userId text [not null]
+  providerAccountId text [not null]
+  credentialPublicKey text [not null]
+  counter integer [not null]
+  credentialDeviceType text [not null]
+  credentialBackedUp boolean [not null]
+  transports text
+
+  indexes {
+    (userId, credentialID) [pk]
+  }
+}
+
+table certificates {
+  id text [pk, not null]
+  event_id integer [not null]
+  user_id text [not null]
+  role text [not null, default: 'Peserta']
+  template text
+  status certificate_status [not null, default: 'pending']
+  signatures jsonb
+  created_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (event_id, user_id, role) [name: 'certificates_event_id_user_id_role_unique', unique]
+  }
+}
+
+table contact_form {
+  id serial [pk, not null, increment]
+  email text [not null]
+  message text [not null]
+  is_read boolean [not null, default: false]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table events {
+  id serial [pk, not null, increment]
+  name text [not null]
+  image_url text
+  scheduled_start timestamp [not null]
+  scheduled_end timestamp [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+  registration_url_type text
+  registration_url text
+  registration_fee integer
+  description text
+  attendee_limit integer
+  location_name text
+  location_url text
+  location_type event_location_type
+  status event_status [not null, default: 'draft']
+  whatsapp_group_url text
+  feedback_url text
+}
+
+table events_attendees {
+  event_id integer [not null]
+  user_id text [not null]
+  rsvp rsvp_type [not null, default: 'yes']
+  attended boolean [not null, default: false]
+  created_at timestamp [default: `now()`]
+
+  indexes {
+    (event_id, user_id) [pk]
+  }
+}
+
+table events_committees {
+  event_id integer [not null]
+  user_id text [not null]
+  role text
+  description text
+
+  indexes {
+    (event_id, user_id) [pk]
+  }
+}
+
+table events_discussions {
+  id serial [pk, not null, increment]
+  event_id integer [not null]
+  user_id text [not null]
+  parent_id integer
+  content text [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table events_hosts_organizations {
+  event_id integer [not null]
+  organization_id integer [not null]
+
+  indexes {
+    (event_id, organization_id) [pk]
+  }
+}
+
+table events_hosts_users {
+  event_id integer [not null]
+  user_id text [not null]
+
+  indexes {
+    (event_id, user_id) [pk]
+  }
+}
+
+table events_photos {
+  event_id integer [not null]
+  photo_id integer [not null]
+
+  indexes {
+    (event_id, photo_id) [pk]
+  }
+}
+
+table events_speakers {
+  event_id integer [not null]
+  user_id text [not null]
+
+  indexes {
+    (event_id, user_id) [pk]
+  }
+}
+
+table events_sponsors_organizations {
+  event_id integer [not null]
+  organization_id integer [not null]
+
+  indexes {
+    (event_id, organization_id) [pk]
+  }
+}
+
+table events_sponsors_users {
+  event_id integer [not null]
+  user_id text [not null]
+
+  indexes {
+    (event_id, user_id) [pk]
+  }
+}
+
+table events_videos {
+  event_id integer [not null]
+  video_id integer [not null]
+
+  indexes {
+    (event_id, video_id) [pk]
+  }
+}
+
+table feeds {
+  id serial [pk, not null, increment]
+  content text [not null]
+  user_id text [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table feeds_comments {
+  id serial [pk, not null, increment]
+  feed_id integer [not null]
+  user_id text [not null]
+  comment text [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table feeds_likes {
+  feed_id integer [not null]
+  user_id text [not null]
+
+  indexes {
+    (feed_id, user_id) [pk]
+  }
+}
+
+table jobs {
+  id serial [pk, not null, increment]
+  title text [not null]
+  company text [not null]
+  location text [not null]
+  description text [not null]
+  workplace_type workplace_type [not null, default: 'on-site']
+  job_type job_type [not null, default: 'full-time']
+  salary text
+  application_url text [not null]
+  status job_opening_status [not null, default: 'draft']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+  created_by text [not null]
+  updated_by text [not null]
+}
+
+table organizations {
+  id serial [pk, not null, increment]
+  name text [not null]
+  image text
+  slug text [not null, unique]
+  organization_type text
+  email text
+  phone_number text
+  website text
+  short_bio text
+  long_bio text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table photos {
+  id serial [pk, not null, increment]
+  image_url text [not null]
+  caption text
+  created_by text [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table sessions {
+  sessionToken text [pk, not null]
+  userId text [not null]
+  expires timestamp [not null]
+}
+
+table users {
+  id text [pk, not null]
+  name text
+  email text [not null]
+  emailVerified timestamp
+  image text
+  user_role user_role [not null, default: 'member']
+  onboarded boolean [not null, default: false]
+  username text [not null, unique]
+  phone_number text
+  occupation text
+  institution text
+  bio text
+  created_at timestamp [default: `now()`]
+}
+
+table verificationTokens {
+  identifier text [not null]
+  token text [not null]
+  expires timestamp [not null]
+
+  indexes {
+    (identifier, token) [pk]
+  }
+}
+
+table videos {
+  id serial [pk, not null, increment]
+  title text [not null]
+  description text
+  video_url text [unique]
+  thumbnails json
+  video_type video_type [not null, default: 'upload']
+  published_at timestamp [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table videos_speakers {
+  video_id integer [not null]
+  user_id text [not null]
+
+  indexes {
+    (video_id, user_id) [pk]
+  }
+}
+
+ref: articles_authors.article_id > articles.id
+
+ref: articles_authors.user_id > users.id
+
+ref: certificates.event_id > events.id
+
+ref: certificates.user_id > users.id
+
+ref: events_attendees.event_id > events.id
+
+ref: events_attendees.user_id > users.id
+
+ref: events_committees.event_id > events.id
+
+ref: events_committees.user_id > users.id
+
+ref: events_discussions.event_id > events.id
+
+ref: events_discussions.user_id > users.id
+
+ref: events_hosts_organizations.event_id > events.id
+
+ref: events_hosts_organizations.organization_id > organizations.id
+
+ref: events_hosts_users.event_id > events.id
+
+ref: events_hosts_users.user_id > users.id
+
+ref: events_photos.event_id > events.id
+
+ref: events_photos.photo_id > photos.id
+
+ref: events_speakers.event_id > events.id
+
+ref: events_speakers.user_id > users.id
+
+ref: events_sponsors_organizations.event_id > events.id
+
+ref: events_sponsors_organizations.organization_id > organizations.id
+
+ref: events_sponsors_users.event_id > events.id
+
+ref: events_sponsors_users.user_id > users.id
+
+ref: events_videos.event_id > events.id
+
+ref: events_videos.video_id > videos.id
+
+ref: feeds_comments.user_id > users.id
+
+ref: feeds_comments.feed_id > feeds.id
+
+ref: feeds_likes.user_id > users.id
+
+ref: feeds_likes.feed_id > feeds.id
+
+ref: feeds.user_id > users.id
+
+ref: videos_speakers.video_id > videos.id
+
+ref: videos_speakers.user_id > users.id

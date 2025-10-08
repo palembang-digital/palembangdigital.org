@@ -1,0 +1,78 @@
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { certificates, certificateStatusEnum } from "@/db/schema";
+import { getEvent, getUser } from "@/services";
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  const session = await auth();
+  if (!session?.user) {
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
+  }
+
+  // @ts-ignore
+  if (session?.user?.role !== "administrator") {
+    return Response.json({ message: "Not authorized" }, { status: 403 });
+  }
+
+  const data = await req.json();
+
+  if (!data.eventId) {
+    return NextResponse.json(
+      { message: "Event ID is required" },
+      { status: 400 }
+    );
+  }
+
+  if (!data.username) {
+    return NextResponse.json(
+      { message: "Username is required" },
+      { status: 400 }
+    );
+  }
+
+  if (!data.role) {
+    return NextResponse.json({ message: "Role is required" }, { status: 400 });
+  }
+
+  if (!data.template) {
+    return NextResponse.json(
+      { message: "Template is required" },
+      { status: 400 }
+    );
+  }
+
+  const event = await getEvent(data.eventId);
+  if (!event) {
+    return NextResponse.json({ message: "Event not found" }, { status: 404 });
+  }
+
+  const user = await getUser(data.username);
+  if (!user) {
+    return NextResponse.json({ message: "User not found" }, { status: 404 });
+  }
+
+  const inputCertificate = {
+    eventId: event.id,
+    userId: user.id,
+    role: data.role,
+    template: data.template,
+    status: certificateStatusEnum.enumValues[1],
+  };
+  console.log(inputCertificate);
+
+  let result;
+  try {
+    result = await db.transaction(async (tx) => {
+      return await tx.insert(certificates).values(inputCertificate).returning();
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Certificate creation failed", error: error },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ message: "Certificate created", data: result });
+}
