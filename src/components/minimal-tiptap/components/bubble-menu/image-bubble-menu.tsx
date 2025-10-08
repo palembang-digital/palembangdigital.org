@@ -1,3 +1,4 @@
+import { ImagePopoverBlock } from "@/components/minimal-tiptap/components/image/image-popover-block";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react";
 import { ShouldShowProps } from "../../types";
@@ -30,7 +31,7 @@ const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
         offset: [0, 8],
       }}
     >
-      <imgPopoverBlock onRemove={unSetImage} />
+      <ImagePopoverBlock onRemove={unSetImage} />
     </BubbleMenu>
   );
 };

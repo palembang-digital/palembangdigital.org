@@ -1,3 +1,4 @@
+import { ImageEditDialog } from "@/components/minimal-tiptap/components/image/image-edit-dialog";
 import type { toggleVariants } from "@/components/ui/toggle";
 import {
   CaretDownIcon,
@@ -67,7 +68,7 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
   return (
     <>
       <LinkEditPopover editor={editor} size={size} variant={variant} />
-      <imgEditDialog editor={editor} size={size} variant={variant} />
+      <ImageEditDialog editor={editor} size={size} variant={variant} />
       <ToolbarSection
         editor={editor}
         actions={formatActions}

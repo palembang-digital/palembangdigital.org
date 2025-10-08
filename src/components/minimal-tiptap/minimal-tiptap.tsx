@@ -1,6 +1,7 @@
 import * as React from "react";
 import "./styles/index.css";
 
+import { ImageBubbleMenu } from "@/components/minimal-tiptap/components/bubble-menu/image-bubble-menu";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { Content, Editor } from "@tiptap/react";
@@ -92,7 +93,7 @@ export const MinimalTiptapEditor = React.forwardRef<
         className={cn("minimal-tiptap-editor", editorContentClassName)}
       />
       <LinkBubbleMenu editor={editor} />
-      <imgBubbleMenu editor={editor} />
+      <ImageBubbleMenu editor={editor} />
     </div>
   );
 });

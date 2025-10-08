@@ -1,5 +1,6 @@
 import { TypographyH4 } from "@/components/ui/typography";
 import { localeDate } from "@/lib/utils";
+import { ImageIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function ArticleCard({ article }: { article: any }) {
@@ -20,7 +21,7 @@ export default function ArticleCard({ article }: { article: any }) {
             />
           ) : (
             <div className="flex items-center justify-center h-full border rounded-t-md">
-              <imgIcon className="h-12 w-12 text-gray-200" />
+              <ImageIcon className="h-12 w-12 text-gray-200" />
             </div>
           )}
         </Link>

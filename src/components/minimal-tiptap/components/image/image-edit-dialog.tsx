@@ -1,3 +1,4 @@
+import { ImageEditBlock } from "@/components/minimal-tiptap/components/image/image-edit-block";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +10,7 @@ import {
 import type { toggleVariants } from "@/components/ui/toggle";
 import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";
+import { ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { ToolbarButton } from "../toolbar-button";
 
@@ -29,7 +31,7 @@ const ImageEditDialog = ({ editor, size, variant }: ImageEditDialogProps) => {
           size={size}
           variant={variant}
         >
-          <imgIcon className="size-5" />
+          <ImageIcon className="size-5" />
         </ToolbarButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
@@ -39,7 +41,7 @@ const ImageEditDialog = ({ editor, size, variant }: ImageEditDialogProps) => {
             Upload an image from your computer
           </DialogDescription>
         </DialogHeader>
-        <imgEditBlock editor={editor} close={() => setOpen(false)} />
+        <ImageEditBlock editor={editor} close={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   );
